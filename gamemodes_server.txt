@@ -157,9 +157,35 @@
 				"de_aztec_se"		""
 			}
 		}
-				"mg_ll_tourney"									// mapgroup definition
+				"mg_ll_tourney_1"									// mapgroup definition
 		{
-			"name"			"mg_ll_tourney"
+			"name"			"mg_ll_tourney_1"
+			"maps"
+			{
+				"de_dust2"		""
+				"de_inferno"		""
+				"de_nuke"		""
+				"de_cache"		""
+				"de_mirage"		""
+				"de_aztec"		""	
+				"de_bazaar"		""	
+				"de_cobblestone"		""	
+				"de_log"		""	
+				"de_resort"		""				
+				"de_overpass"		""				
+				"de_season"		""				
+				"de_train"		""				
+				"de_vertigo"		""				
+				"de_mill_ce"		""				
+				"de_fire"		""				
+				"de_contra_b3"		""				
+				"de_russka"		""				
+				"de_prodigy"		""
+			}
+		}
+				"mg_ll_tourney_2"									// mapgroup definition
+		{
+			"name"			"mg_ll_tourney_2"
 			"maps"
 			{
 				"de_dust2"		""
