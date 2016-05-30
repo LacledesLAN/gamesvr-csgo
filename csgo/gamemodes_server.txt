@@ -157,5 +157,64 @@
 				"de_aztec_se"		""
 			}
 		}
+				"ll_bomb"									// mapgroup definition
+		{
+			"name"			"ll_bomb"
+			"maps"
+			{
+				"de_ali"		""
+				"de_aztec"		""
+				"de_bazaar"		""
+				"de_blackgold"	""
+				"de_cache"		""
+				"de_castle"		""
+				"de_cbble"		""
+				"de_coast"		""
+				"de_dust"		""
+				"de_dust2"		""
+				"de_empire"		""
+				"de_facade"		""
+				"de_favela"		""
+				"de_inferno"	""
+				"de_log"		""
+				"de_marquis"	""
+				"de_mikla"		""
+				"de_mirage"		""
+				"de_mist"		""
+				"de_nuke"		""
+				"de_overgrown"	""
+				"de_overpass"	""
+				"de_rails"		""
+				"de_resort"		""
+				"de_royal"		""
+				"de_santorini"	""
+				"de_seaside"	""
+				"de_season"		""
+				"de_train"		""
+				"de_tulip"		""
+				"de_vertigo"	""
+				"de_zoo"		""
+			}
+		}
+				"ll_hostage"									// mapgroup definition
+		{
+			"name"			"ll_hostage"
+			"maps"
+			{
+				"cs_agency"		""
+				"cs_assault"	""
+				"cs_backalley"	""
+				"cs_cruise"		""
+				"cs_downtown"	""
+				"cs_insertion"	""
+				"cs_italy"		""
+				"cs_militia"	""
+				"cs_motel"		""
+				"cs_office"		""
+				"cs_rush"		""
+				"cs_thunder"	""
+				"cs_workout"	""
+			}
+		}
 	}
 }
