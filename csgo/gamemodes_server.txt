@@ -3,7 +3,7 @@
 // Values here override the default gamemodes.txt 
 
 "GameModes_Server.txt"{"gameTypes"{"classic"{"gameModes"{
-}
+
 /////////////////////////////////////////
 // COMPETITIVE
 /////////////////////////////////////////
