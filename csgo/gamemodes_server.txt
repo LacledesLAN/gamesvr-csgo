@@ -216,5 +216,15 @@
 				"cs_workout"	""
 			}
 		}
+				"ll_orange"									// mapgroup definition
+		{
+			"name"			"ll_orange"
+			"maps"
+			{
+				"de_orange"		""
+				"orangebox_warmup_day"	""
+				"gg_ctm_csgo"	""
+			}
+		}
 	}
 }
