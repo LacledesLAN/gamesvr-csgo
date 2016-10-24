@@ -223,6 +223,7 @@
 			{
 				"de_orange"		""
 				"orangebox_warmup_day"	""
+				"fy_pool_day"	""
 				"gg_ctm_csgo"	""
 			}
 		}
