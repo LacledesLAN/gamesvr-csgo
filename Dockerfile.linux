@@ -1,0 +1,29 @@
+FROM lacledeslan/gamesvr:srcds.linux
+
+MAINTAINER Laclede's LAN <contact@lacledeslan.com>
+
+ENV SERVER_NAME="gamesvr-csgo.linux" \
+	USERNAME="csgo"
+
+# Install CS:GO
+RUN useradd \
+		--shell /bin/bash \
+		${USERNAME} &&\
+	# Create output directory &&\
+		mkdir /app/bin --parents &&\
+	# Download &&\
+		/app/steamcmd/steamcmd.sh \
+			+login anonymous \
+			+force_install_dir /app/bin/ \
+			+app_update 740 validate \
+			+quit &&\
+	# Set permissions &&\
+		chown -R ${USERNAME} /app/bin/
+
+COPY ./dist/ /app/bin/
+
+CMD ["/bin/bash"]
+
+USER csgo
+
+WORKDIR /app/bin/
