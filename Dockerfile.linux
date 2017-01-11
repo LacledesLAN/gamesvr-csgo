@@ -1,3 +1,5 @@
+# escape=`
+
 FROM lacledeslan/gamesvr-srcds:linux
 
 MAINTAINER Laclede's LAN <contact@lacledeslan.com>
@@ -7,18 +9,18 @@ ENV IMAGE="gamesvr-srcds-csgo:linux"
 WORKDIR /app/bin/
 
 # Install CS:GO
-RUN useradd \
-		--shell /bin/bash \
-		CSGO &&\
-	# Create output directory &&\
-		mkdir /app/bin --parents &&\
-	# Download &&\
-		/app/steamcmd/steamcmd.sh \
-			+login anonymous \
-			+force_install_dir /app/bin/ \
-			+app_update 740 validate \
-			+quit &&\
-	# Set permissions &&\
+RUN useradd `
+		--shell /bin/bash `
+		CSGO &&`
+	# Create output directory &&`
+		mkdir /app/bin --parents &&`
+	# Download &&`
+		/app/steamcmd/steamcmd.sh `
+			+login anonymous `
+			+force_install_dir /app/bin/ `
+			+app_update 740 validate `
+			+quit &&`
+	# Set permissions &&`
 		chown -R CSGO /app/bin
 	
 COPY ./dist/ /app/bin/
