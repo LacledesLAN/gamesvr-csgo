@@ -6,7 +6,26 @@ MAINTAINER Laclede's LAN <contact@lacledeslan.com>
 
 ENV IMAGE="gamesvr-srcds-csgo:linux"
 
-WORKDIR /app/bin/
+USER root
+
+# Install LL maps from public ftp
+# (done before app install so we don't accidentally overwrite stock content)
+RUN echo "Downloading maps from content server" &&`
+		mkdir --parents /tmp/maps/ &&`
+		cd /tmp/maps/ &&`
+		wget -m `
+			ftp://llgameserverbot:6gDyfNJhm4UsraE5@raw.content.lacledeslan.net/csgo/maps/ `
+			-nH --no-verbose --cut-dirs 4 &&`
+		rm -f .listing &&`
+	echo "Decompressing files" &&`
+		bzip2 --decompress /tmp/maps/*.*.bz2 &&`
+		rm -f /tmp/maps/*.bz2 &&`
+	echo "Moving uncompressed files to destination" &&`
+		mkdir --parents /app/bin/csgo/maps/ &&`
+		mv /tmp/maps/*.bsp /app/bin/csgo/maps/ &&`
+		mv /tmp/maps/*.nav /app/bin/csgo/maps/ &&`
+	echo "Performing Cleanup" &&`
+		rm -rf /tmp/*;
 
 # Install CS:GO
 RUN useradd `
@@ -21,10 +40,12 @@ RUN useradd `
 			+app_update 740 validate `
 			+quit &&`
 	# Set permissions &&`
-		chown -R CSGO /app/bin
+		chown -R CSGO /app/bin;
 	
 COPY ./dist/ /app/bin/
 
 USER CSGO
+
+WORKDIR /app/bin/
 
 CMD ["/bin/bash"]
