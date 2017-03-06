@@ -41,7 +41,23 @@ RUN useradd `
 			+quit &&`
 	# Set permissions &&`
 		chown -R CSGO /app/bin;
-	
+
+# METAMOD
+	RUN echo "Downloading METAMOD" &&`
+		wget --tries=9 --waitretry=30 --no-verbose -O /tmp/metamod.tar.gz https://github.com/LacledesLAN/gamesvr-srcds-metamod.linux/archive/master.tar.gz &&`
+		chown CSGO /tmp/metamod.tar.gz &&`
+		tar -xf /tmp/metamod.tar.gz -C /tmp/ &&`
+		cp -r /tmp/*metamod*-master/dist/* /app/bin/csgo/ &&`
+		rm -rf /tmp/*
+
+# SOURCE MOD
+	RUN echo "Downloading SOURCEMOD" &&`
+		wget --tries=9 --waitretry=30 --no-verbose -O /tmp/sourcemod.tar.gz https://github.com/LacledesLAN/gamesvr-srcds-sourcemod.linux/archive/master.tar.gz &&`
+		chown CSGO /tmp/sourcemod.tar.gz &&`
+		tar -xf /tmp/sourcemod.tar.gz -C /tmp/ &&`
+		cp -r /tmp/*sourcemod*-master/dist/* /app/bin/csgo/ &&`
+		rm -rf /tmp/*
+
 COPY ./dist/ /app/bin/
 
 USER CSGO
