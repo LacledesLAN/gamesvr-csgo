@@ -167,6 +167,7 @@
 				"de_bazaar"		""
 				"de_blackgold"	""
 				"de_cache"		""
+				"de_canals"		""
 				"de_castle"		""
 				"de_cbble"		""
 				"de_coast"		""
