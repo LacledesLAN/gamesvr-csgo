@@ -2,13 +2,16 @@
 
 FROM lacledeslan/gamesvr-srcds:linux
 
-MAINTAINER Laclede's LAN <contact@lacledeslan.com>
+LABEL maintainer "Laclede's LAN <contact@lacledeslan.com>"
 
-ENV IMAGE="gamesvr-srcds-csgo:linux"
+ENV IMAGE="lacledeslan/gamesvr-srcds-csgo:linux"
 
-USER root
+HEALTHCHECK NONE
 
-# Install LL maps from public ftp
+# Copy files (if any) from the build-cache
+COPY ./build-cache/ /app/bin/
+
+# Install custom maps from public ftp 
 # (done before app install so we don't accidentally overwrite stock content)
 RUN echo "Downloading maps from content server" &&`
 		mkdir --parents /tmp/maps/ &&`
@@ -31,8 +34,6 @@ RUN echo "Downloading maps from content server" &&`
 RUN useradd `
 		--shell /bin/bash `
 		CSGO &&`
-	# Create output directory &&`
-		mkdir /app/bin --parents &&`
 	# Download &&`
 		/app/steamcmd/steamcmd.sh `
 			+login anonymous `
