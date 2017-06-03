@@ -11,7 +11,7 @@ HEALTHCHECK NONE
 # Copy files (if any) from the build-cache
 COPY ./build-cache/ /app/bin/
 
-# Install custom maps from public ftp 
+# Install custom maps from public ftp
 # (done before app install so we don't accidentally overwrite stock content)
 RUN echo "Downloading maps from content server" &&`
 		mkdir --parents /tmp/maps/ &&`
@@ -42,8 +42,6 @@ RUN useradd `
 			+quit &&`
 	# Set permissions &&`
 		chown -R CSGO /app/bin;
-
-COPY ./dist/ /app/bin/
 
 USER CSGO
 
