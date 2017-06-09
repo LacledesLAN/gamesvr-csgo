@@ -8,12 +8,19 @@ ENV IMAGE="lacledeslan/gamesvr-srcds-csgo:linux"
 
 HEALTHCHECK NONE
 
-# Copy files (if any) from the build-cache
-COPY ./build-cache/ /app/bin/
+# Set up user
+RUN useradd `
+		--home /app/bin `
+		--gid srcds `
+		--shell /bin/bash `
+		--system `
+		CSGO &&`
+	chown -R CSGO:srcds /app/bin
 
-# Install custom maps from public ftp
-# (done before app install so we don't accidentally overwrite stock content)
-RUN echo "Downloading maps from content server" &&`
+USER CSGO
+
+# Custom content (done before app install so we don't accidentally overwrite stock content)
+RUN echo "Downloading content from LL public ftp server" &&`
 		mkdir --parents /tmp/maps/ &&`
 		cd /tmp/maps/ &&`
 		wget -m `
@@ -28,23 +35,21 @@ RUN echo "Downloading maps from content server" &&`
 		mv /tmp/maps/*.bsp /app/bin/csgo/maps/ &&`
 		mv /tmp/maps/*.nav /app/bin/csgo/maps/ &&`
 	echo "Performing Cleanup" &&`
-		rm -rf /tmp/*;
+		rm -rf /tmp/*/*;
+
+# Copy files (if any) from the build-cache
+COPY ./build-cache/ /app/bin/
 
 # Install CS:GO
-RUN useradd `
-		--shell /bin/bash `
-		CSGO &&`
-	# Download &&`
+RUN echo "Downloading CSGO via SteamCMD" &&`
 		/app/steamcmd/steamcmd.sh `
 			+login anonymous `
 			+force_install_dir /app/bin/ `
 			+app_update 740 validate `
-			+quit &&`
-	# Set permissions &&`
-		chown -R CSGO /app/bin;
-
-USER CSGO
+			+quit
 
 WORKDIR /app/bin/
 
 CMD ["/bin/bash"]
+
+ONBUILD USER root
