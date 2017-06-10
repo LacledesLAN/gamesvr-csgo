@@ -50,6 +50,4 @@ RUN echo "Downloading CSGO via SteamCMD" &&`
 
 WORKDIR /app/bin/
 
-CMD ["/bin/bash"]
-
 ONBUILD USER root
