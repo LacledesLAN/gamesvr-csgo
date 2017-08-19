@@ -1,77 +1,10 @@
 # escape=`
 
-FROM ubuntu:rolling
+FROM lacledeslan/steamcmd:linux as steamcmd-csgo-builder
 
-##LABEL maintainer "Laclede's LAN <contact@lacledeslan.com>"
+# Copy cached build files (if any)
+COPY ./build-cache/ /app/output
 
-##ENV IMAGE="lacledeslan/gamesvr:srcds.linux"
-
-##HEALTHCHECK NONE
-
-# Install dependencies
-RUN apt-get update && apt-get install -y `
-        bzip2 curl lib32gcc1 lib32tinfo5 tar wget &&`
-    apt-get clean &&`
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Set up Enviornment
-RUN groupadd --system srcds &&`
-    mkdir /app /app/bin &&`
-        chgrp srcds /app &&`
-        chgrp srcds /app/bin &&`
-    useradd `
-        --home /app/steamcmd --create-home `
-        --gid srcds `
-        --system `
-        steamcmd
-
-USER steamcmd
-
-# SteamCMD
-RUN cd /app/steamcmd &&`
-        curl --silent http://media.steampowered.com/installer/steamcmd_linux.tar.gz | tar -C /app/steamcmd -vxz &&`
-        rm -f steamcmd_linux.tar.gz &&`
-    # Run SteamCMD so it self-updates &&`
-        chmod +x /app/steamcmd/*.sh &&`
-        /app/steamcmd/steamcmd.sh +quit &&`
-    # Cleanup &&`
-    rm /app/steamcmd/Steam/logs/*
-
-ENTRYPOINT ["/app/steamcmd/steamcmd.sh"]
-
-CMD ["+quit"]
-
-ONBUILD ENTRYPOINT ["/bin/bash"]
-
-ONBUILD USER root
-
-##=============================================================================
-##=============================================================================
-
-USER root
-
-##escape=`
-
-##FROM lacledeslan/gamesvr-srcds:linux
-
-LABEL maintainer "Laclede's LAN <contact@lacledeslan.com>"
-
-ENV IMAGE="lacledeslan/gamesvr-srcds-csgo:linux"
-
-HEALTHCHECK NONE
-
-# Set up user
-RUN useradd `
-		--home /app/bin `
-		--gid srcds `
-		--shell /bin/bash `
-		--system `
-		CSGO &&`
-	chown -R CSGO:srcds /app/bin
-
-USER CSGO
-
-# Custom content (done before app install so we don't accidentally overwrite stock content)
 RUN echo "Downloading content from LL public ftp server" &&`
 		mkdir --parents /tmp/maps/ &&`
 		cd /tmp/maps/ &&`
@@ -83,23 +16,61 @@ RUN echo "Downloading content from LL public ftp server" &&`
 		bzip2 --decompress /tmp/maps/*.*.bz2 &&`
 		rm -f /tmp/maps/*.bz2 &&`
 	echo "Moving uncompressed files to destination" &&`
-		mkdir --parents /app/bin/csgo/maps/ &&`
-		mv /tmp/maps/*.bsp /app/bin/csgo/maps/ &&`
-		mv /tmp/maps/*.nav /app/bin/csgo/maps/ &&`
+		mkdir --parents /app/output/csgo/maps/ &&`
+		mv /tmp/maps/*.bsp /app/output/csgo/maps/ &&`
+		mv /tmp/maps/*.nav /app/output/csgo/maps/ &&`
 	echo "Performing Cleanup" &&`
 		rm -rf /tmp/*/*;
 
-# Copy files (if any) from the build-cache
-COPY ./build-cache/ /app/bin/
+# Install HL2DM
+RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
+        /app/steamcmd.sh `
+            +login anonymous `
+            +force_install_dir /app/output `
+            +app_update 740 validate `
+            +quit;
 
-# Install CS:GO
-RUN echo "Downloading CSGO via SteamCMD" &&`
-		/app/steamcmd/steamcmd.sh `
-			+login anonymous `
-			+force_install_dir /app/bin/ `
-			+app_update 740 validate `
-			+quit
+#=======================================================================
+FROM debian:stretch-slim
 
-WORKDIR /app/bin/
+ARG VCS_REF
+
+HEALTHCHECK NONE
+
+RUN dpkg --add-architecture i386;
+
+# Install dependencies
+RUN apt-get update && apt-get install -y `
+        ca-certificates lib32gcc1 libcurl3-gnutls libstdc++6 libstdc++6:i386 &&`
+    apt-get clean &&`
+    rm -rf /var/lib/apt/lists/*;
+
+LABEL MAINTAINER="Laclede's LAN <contact@lacledeslan.com>" `
+      org.label-schema.url="https://github.com/LacledesLAN" `
+      org.label-schema.vendor="Laclede's LAN" `
+      org.label-schema.vcs-ref=$VCS_REF `
+      org.label-schema.name="gamesvr-csgo" `
+      org.label-schema.description="Counter-Strike: Global Offensive in Docker" `
+      org.label-schema.vcs-url="https://github.com/LacledesLAN/gamesvr-csgo"
+
+#Add user "CSGO" (to user group "srcds")
+RUN groupadd --system srcds &&`
+    mkdir --parents /app/.steam/sdk32 &&`
+        chgrp srcds /app &&`
+    useradd `
+        --home /app `
+        --gid srcds `
+        --system `
+        CSGO &&`
+    chown -R CSGO:srcds /app;
+
+USER CSGO
+
+RUN ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so
+
+# Copy in from SteamCMD Builder
+COPY --from=steamcmd-csgo-builder /app/output /app
+
+WORKDIR /app
 
 ONBUILD USER root
