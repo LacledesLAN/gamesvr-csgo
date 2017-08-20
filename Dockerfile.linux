@@ -2,10 +2,6 @@
 
 FROM lacledeslan/steamcmd:linux as csgo-builder
 
-# Set up folder for "output"
-USER root
-RUN mkdir --parents /output
-
 # Copy cached build files (if any)
 COPY ./build-cache/ /output
 
@@ -65,16 +61,15 @@ RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
             +app_update 740 validate `
             +quit;
 
-RUN ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so
-
 #Add user "CSGO". Assign to group "root" until [github.com/moby/moby/pull/34263] makes it into CE stable
-RUN groupadd --system root &&`
-    mkdir --parents /app/.steam/sdk32 &&`
+RUN mkdir --parents /app/.steam/sdk32 &&`
     useradd `
         --home /app `
         --gid root `
         --system `
         CSGO
+
+RUN ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so
 
 USER CSGO
 
