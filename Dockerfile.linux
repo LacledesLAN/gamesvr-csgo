@@ -3,7 +3,8 @@
 FROM lacledeslan/steamcmd:linux as csgo-builder
 
 # Set up folder for "output"
-RUN --parents /output
+USER root
+RUN mkdir --parents /output
 
 # Copy cached build files (if any)
 COPY ./build-cache/ /output
