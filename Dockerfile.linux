@@ -1,34 +1,29 @@
 # escape=`
 
-FROM lacledeslan/steamcmd:linux as steamcmd-csgo-builder
+FROM lacledeslan/steamcmd:linux as csgo-builder
+
+# Set up folder for "output"
+RUN --parents /output
 
 # Copy cached build files (if any)
-COPY ./build-cache/ /app/output
+COPY ./build-cache/ /output
 
 RUN echo "Downloading content from LL public ftp server" &&`
-		mkdir --parents /tmp/maps/ &&`
-		cd /tmp/maps/ &&`
-		wget -m `
-			ftp://llgameserverbot:6gDyfNJhm4UsraE5@raw.content.lacledeslan.net/csgo/maps/ `
-			-nH --no-verbose --cut-dirs 4 &&`
-		rm -f .listing &&`
-	echo "Decompressing files" &&`
-		bzip2 --decompress /tmp/maps/*.*.bz2 &&`
-		rm -f /tmp/maps/*.bz2 &&`
-	echo "Moving uncompressed files to destination" &&`
-		mkdir --parents /app/output/csgo/maps/ &&`
-		mv /tmp/maps/*.bsp /app/output/csgo/maps/ &&`
-		mv /tmp/maps/*.nav /app/output/csgo/maps/ &&`
-	echo "Performing Cleanup" &&`
-		rm -rf /tmp/*/*;
-
-# Install HL2DM
-RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
-        /app/steamcmd.sh `
-            +login anonymous `
-            +force_install_dir /app/output `
-            +app_update 740 validate `
-            +quit;
+        mkdir --parents /tmp/maps/ /output &&`
+        cd /tmp/maps/ &&`
+        wget -m `
+            ftp://llgameserverbot:6gDyfNJhm4UsraE5@raw.content.lacledeslan.net/csgo/maps/ `
+            -nH --no-verbose --cut-dirs 4 &&`
+        rm -f .listing &&`
+    echo "Decompressing files" &&`
+        bzip2 --decompress /tmp/maps/*.*.bz2 &&`
+        rm -f /tmp/maps/*.bz2 &&`
+    echo "Moving uncompressed files to destination" &&`
+        mkdir --parents /output/csgo/maps/ &&`
+        mv /tmp/maps/*.bsp /output/csgo/maps/ &&`
+        mv /tmp/maps/*.nav /output/csgo/maps/ &&`
+    echo "Performing Cleanup" &&`
+        rm -rf /tmp/*/*;
 
 #=======================================================================
 FROM debian:stretch-slim
@@ -36,14 +31,6 @@ FROM debian:stretch-slim
 ARG VCS_REF
 
 HEALTHCHECK NONE
-
-RUN dpkg --add-architecture i386;
-
-# Install dependencies
-RUN apt-get update && apt-get install -y `
-        ca-certificates lib32gcc1 libcurl3-gnutls libstdc++6 libstdc++6:i386 &&`
-    apt-get clean &&`
-    rm -rf /var/lib/apt/lists/*;
 
 LABEL MAINTAINER="Laclede's LAN <contact@lacledeslan.com>" `
       org.label-schema.url="https://github.com/LacledesLAN" `
@@ -53,23 +40,43 @@ LABEL MAINTAINER="Laclede's LAN <contact@lacledeslan.com>" `
       org.label-schema.description="Counter-Strike: Global Offensive in Docker" `
       org.label-schema.vcs-url="https://github.com/LacledesLAN/gamesvr-csgo"
 
-#Add user "CSGO" (to user group "srcds")
-RUN groupadd --system srcds &&`
-    mkdir --parents /app/.steam/sdk32 &&`
-        chgrp srcds /app &&`
-    useradd `
-        --home /app `
-        --gid srcds `
-        --system `
-        CSGO &&`
-    chown -R CSGO:srcds /app;
+## Dependencies & Environment
+RUN dpkg --add-architecture i386;
 
-USER CSGO
+RUN apt-get update && apt-get install -y `
+        ca-certificates lib32gcc1 libcurl3-gnutls libstdc++6 libstdc++6:i386 &&`
+    apt-get clean &&`
+    rm -rf /var/lib/apt/lists/*;
+
+## Copy files in from builder
+COPY --from=csgo-builder /output /app
+
+## CSGO is so large we can't reliably use multi-stage builds in docker cloud
+
+#Pull in SteamCMD
+COPY --from=csgo-builder /app /app/steamcmd
+
+# Install CSGO
+RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
+        /app/steamcmd/steamcmd.sh `
+            +login anonymous `
+            +force_install_dir /app `
+            +app_update 740 validate `
+            +quit;
 
 RUN ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so
 
-# Copy in from SteamCMD Builder
-COPY --from=steamcmd-csgo-builder /app/output /app
+#Add user "CSGO". Assign to group "root" until #34263 makes it into CE stable (github.com/moby/moby/pull/34263)
+RUN groupadd --system root &&`
+    mkdir --parents /app/.steam/sdk32 &&`
+    useradd `
+        --home /app `
+        --gid root `
+        --system `
+        CSGO &&`
+    chown -R CSGO:root /app;
+
+USER CSGO
 
 WORKDIR /app
 
