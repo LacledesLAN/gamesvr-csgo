@@ -45,7 +45,7 @@ LABEL MAINTAINER="Laclede's LAN <contact@lacledeslan.com>" `
 RUN dpkg --add-architecture i386;
 
 RUN apt-get update && apt-get install -y `
-        ca-certificates lib32gcc1 libcurl3-gnutls libstdc++6 libstdc++6:i386 &&`
+        ca-certificates lib32gcc1 lib32tinfo5 libcurl3-gnutls libstdc++6 libstdc++6:i386 &&`
     apt-get clean &&`
     rm -rf /var/lib/apt/lists/*;
 
@@ -67,15 +67,14 @@ RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
 
 RUN ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so
 
-#Add user "CSGO". Assign to group "root" until #34263 makes it into CE stable (github.com/moby/moby/pull/34263)
+#Add user "CSGO". Assign to group "root" until [github.com/moby/moby/pull/34263] makes it into CE stable
 RUN groupadd --system root &&`
     mkdir --parents /app/.steam/sdk32 &&`
     useradd `
         --home /app `
         --gid root `
         --system `
-        CSGO &&`
-    chown -R CSGO:root /app;
+        CSGO
 
 USER CSGO
 
