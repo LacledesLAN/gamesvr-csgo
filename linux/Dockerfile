@@ -2,9 +2,6 @@
 
 FROM lacledeslan/steamcmd:linux as csgo-builder
 
-# Copy cached build files (if any)
-COPY ./build-cache/ /output
-
 RUN echo "Downloading content from LL public ftp server" &&`
         mkdir --parents /tmp/maps/ /output &&`
         cd /tmp/maps/ &&`
@@ -23,7 +20,7 @@ RUN echo "Downloading content from LL public ftp server" &&`
         rm -rf /tmp/*/*;
 
 #=======================================================================
-FROM debian:stretch-slim
+FROM debian:stable-slim
 
 ARG VCS_REF
 
@@ -45,21 +42,27 @@ RUN apt-get update && apt-get install -y `
     apt-get clean &&`
     rm -rf /var/lib/apt/lists/*;
 
+## Add in tests
+COPY ./test /test
+
 ## Copy files in from builder
 COPY --from=csgo-builder /output /app
 
 ## CSGO is so large we can't reliably use multi-stage builds in docker cloud
+
+# Copy cached build files (if any)
+COPY ./build-cache/ /output
 
 #Pull in SteamCMD
 COPY --from=csgo-builder /app /app/steamcmd
 
 # Install CSGO
 RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
-        /app/steamcmd/steamcmd.sh `
-            +login anonymous `
-            +force_install_dir /app `
-            +app_update 740 validate `
-            +quit;
+    /app/steamcmd/steamcmd.sh `
+        +login anonymous `
+        +force_install_dir /app `
+        +app_update 740 validate `
+        +quit;
 
 #Add user "CSGO". Assign to group "root" until [github.com/moby/moby/pull/34263] makes it into CE stable
 RUN mkdir --parents /app/.steam/sdk32 &&`
@@ -67,10 +70,13 @@ RUN mkdir --parents /app/.steam/sdk32 &&`
         --home /app `
         --gid root `
         --system `
-        CSGO
+        CSGO &&`
+    chown CSGO:root /app /test &&`
+    find /app -type d -exec chmod 775 {} +
 
 RUN ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so
 
+# Intentionally set after all build steps
 USER CSGO
 
 WORKDIR /app
