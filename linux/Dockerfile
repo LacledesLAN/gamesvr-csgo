@@ -20,61 +20,61 @@ RUN echo "Downloading content from LL public ftp server" &&`
         rm -rf /tmp/*/*;
 
 #=======================================================================
-FROM debian:stable-slim
-
-ARG VCS_REF
+FROM debian:stretch-slim
 
 HEALTHCHECK NONE
 
-LABEL MAINTAINER="Laclede's LAN <contact@lacledeslan.com>" `
-      org.label-schema.url="https://github.com/LacledesLAN" `
+ARG BUILDNODE="unspecified"
+ARG SOURCE_COMMIT
+
+LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
+      com.lacledeslan.build-node=$BUILDNODE `
+      org.label-schema.schema-version="1.0" `
+      org.label-schema.url="https://github.com/LacledesLAN/README.1ST" `
+      org.label-schema.vcs-ref=$SOURCE_COMMIT `
       org.label-schema.vendor="Laclede's LAN" `
-      org.label-schema.vcs-ref=$VCS_REF `
-      org.label-schema.name="gamesvr-csgo" `
       org.label-schema.description="Counter-Strike: Global Offensive in Docker" `
       org.label-schema.vcs-url="https://github.com/LacledesLAN/gamesvr-csgo"
 
-## Dependencies & Environment
-RUN dpkg --add-architecture i386;
-
-RUN apt-get update && apt-get install -y `
+RUN dpkg --add-architecture i386 &&`
+    apt-get update && apt-get install -y `
         ca-certificates lib32gcc1 lib32tinfo5 libcurl3-gnutls libstdc++6 libstdc++6:i386 &&`
     apt-get clean &&`
     rm -rf /var/lib/apt/lists/*;
 
-## Add in tests
-COPY ./test /test
-
-## Copy files in from builder
-COPY --from=csgo-builder /output /app
-
 ## CSGO is so large we can't reliably use multi-stage builds in docker cloud
 
+# Copy files in from builder
+COPY --from=csgo-builder /output /app
+
 # Copy cached build files (if any)
-COPY ./build-cache/ /output
+COPY ./build-cache /app
 
 #Pull in SteamCMD
 COPY --from=csgo-builder /app /app/steamcmd
 
 # Install CSGO
 RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
-    /app/steamcmd/steamcmd.sh `
-        +login anonymous `
-        +force_install_dir /app `
-        +app_update 740 validate `
-        +quit;
+        /app/steamcmd/steamcmd.sh `
+            +login anonymous `
+            +force_install_dir /app `
+            +app_update 740 validate `
+            +quit;
 
-#Add user "CSGO". Assign to group "root" until [github.com/moby/moby/pull/34263] makes it into CE stable
-RUN mkdir --parents /app/.steam/sdk32 &&`
-    useradd `
-        --home /app `
-        --gid root `
-        --system `
-        CSGO &&`
-    chown CSGO:root /app /test &&`
-    find /app -type d -exec chmod 775 {} +
+RUN echo $'\n\nLinking steamclient.so to prevent srcds_run errors' &&`
+        mkdir --parents /app/.steam/sdk32 &&`
+        ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so
 
-RUN ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so
+## Add in tests
+COPY ./tests /app/ll-tests
+
+RUN echo $'\n\nCreating user "CSGO" (to group "root" until [github.com/moby/moby/pull/34263] makes it into CE stable)' &&`
+        useradd --home /app --gid root --system `
+            CSGO &&`
+    echo 'Setting user directory permissions' &&`
+        chown CSGO:root /app &&`
+        find /app -type d -exec chmod 775 {} + &&`
+        chmod +x /app/ll-tests/*.sh
 
 # Intentionally set after all build steps
 USER CSGO

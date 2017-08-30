@@ -5,4 +5,4 @@ services:
         build:
             context: .
             dockerfile: ./Dockerfile
-        command: /test/bin/bats /test/tests.bats
+        command: /app/ll-tests/gamesvr-csgo.sh
