@@ -51,7 +51,7 @@ else
 fi;
 
 # Make sure srcds_run is executing CSGO (and not another title)
-if grep -i -q '#Game.dll loaded for "Counter-Strike: Global Offensive"' "$logfile"; then
+if grep -i -q "Game.dll loaded for \"Counter-Strike: Global Offensive\"" "$logfile"; then
     echo $'\tFAIL: Server is not running gametype CSGO';
     exit 1;
 else
