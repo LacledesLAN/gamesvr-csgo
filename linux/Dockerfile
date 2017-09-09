@@ -38,7 +38,7 @@ LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
 
 RUN dpkg --add-architecture i386 &&`
     apt-get update && apt-get install -y `
-        ca-certificates lib32gcc1 lib32tinfo5 libcurl3-gnutls libstdc++6 libstdc++6:i386 &&`
+        ca-certificates lib32gcc1 lib32tinfo5 libcurl4-gnutls-dev:i386 libstdc++6 libstdc++6:i386 &&`
     apt-get clean &&`
     rm -rf /var/lib/apt/lists/*;
 

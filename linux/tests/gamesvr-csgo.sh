@@ -66,6 +66,6 @@ else
     echo $'\tPASS: Server succesfully hibernated';
 fi;
 
-echo $'{{ ALL TESTS PASSED}}\n\n';
+echo $'{{ ALL TESTS PASSED }}\n\n';
 
 exit 0;
