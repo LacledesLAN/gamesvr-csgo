@@ -1,5 +1,4 @@
 # escape=`
-
 FROM lacledeslan/steamcmd:linux as csgo-builder
 
 RUN echo "Downloading content from LL public ftp server" &&`
@@ -22,10 +21,16 @@ RUN echo "Downloading content from LL public ftp server" &&`
 #=======================================================================
 FROM debian:stretch-slim
 
+ARG BUILDNODE=unspecified
+ARG SOURCE_COMMIT=unspecified
+
 HEALTHCHECK NONE
 
-ARG BUILDNODE="unspecified"
-ARG SOURCE_COMMIT
+RUN dpkg --add-architecture i386 &&`
+    apt-get update && apt-get install -y `
+        ca-certificates lib32gcc1 lib32tinfo5 libcurl4-gnutls-dev:i386 libstdc++6 libstdc++6:i386 libtcmalloc-minimal4:i386 procps screen &&`
+    apt-get clean &&`
+    rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*;
 
 LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
       com.lacledeslan.build-node=$BUILDNODE `
@@ -33,25 +38,35 @@ LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
       org.label-schema.url="https://github.com/LacledesLAN/README.1ST" `
       org.label-schema.vcs-ref=$SOURCE_COMMIT `
       org.label-schema.vendor="Laclede's LAN" `
-      org.label-schema.description="Counter-Strike: Global Offensive in Docker" `
+      org.label-schema.description="Counter-Strike: Global Offensive Dedicated Server" `
       org.label-schema.vcs-url="https://github.com/LacledesLAN/gamesvr-csgo"
 
-RUN dpkg --add-architecture i386 &&`
-    apt-get update && apt-get install -y `
-        ca-certificates lib32gcc1 lib32tinfo5 libcurl4-gnutls-dev:i386 libstdc++6 libstdc++6:i386 &&`
-    apt-get clean &&`
-    rm -rf /var/lib/apt/lists/*;
+# Set up Enviornment
+RUN useradd --home /app --gid root --system CSGO &&`
+    mkdir -p /app/ll-tests &&`
+    chown CSGO:root -R /app;
 
 ## CSGO is so large we can't reliably use multi-stage builds in docker cloud
-
-# Copy files in from builder
-COPY --from=csgo-builder /output /app
 
 # Copy cached build files (if any)
 COPY ./build-cache /app
 
 #Pull in SteamCMD
 COPY --from=csgo-builder /app /app/steamcmd
+
+# Copy files in from builder
+COPY --from=csgo-builder /output /app
+# Ownership shim until [github.com/moby/moby/pull/34263] makes it into Docker Cloud
+RUN chown -R CSGO:root /app;
+
+## Add in tests
+COPY ./ll-tests /app/ll-tests
+
+RUN chmod +rx /app/ll-tests/*.sh &&`
+    chmod +rwx /app/ll-tests &&`
+    chown CSGO:root -R /app/ll-tests;
+
+USER CSGO
 
 # Install CSGO
 RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
@@ -63,21 +78,7 @@ RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
 
 RUN echo $'\n\nLinking steamclient.so to prevent srcds_run errors' &&`
         mkdir --parents /app/.steam/sdk32 &&`
-        ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so
-
-## Add in tests
-COPY ./tests /app/ll-tests
-
-RUN echo $'\n\nCreating user "CSGO" (to group "root" until [github.com/moby/moby/pull/34263] makes it into CE stable)' &&`
-        useradd --home /app --gid root --system `
-            CSGO &&`
-    echo 'Setting user directory permissions' &&`
-        chown CSGO:root /app &&`
-        find /app -type d -exec chmod 775 {} + &&`
-        chmod +x /app/ll-tests/*.sh
-
-# Intentionally set after all build steps
-USER CSGO
+        ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so;
 
 WORKDIR /app
 
