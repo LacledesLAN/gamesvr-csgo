@@ -2,4 +2,6 @@ version: "2"
 
 services: 
     sut:
+        build:
+            context: .
         command: /app/ll-tests/gamesvr-csgo.sh
