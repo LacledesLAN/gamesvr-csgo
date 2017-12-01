@@ -19,7 +19,7 @@ RUN echo "Downloading content from LL public ftp server" &&`
         rm -rf /tmp/*/*;
 
 #=======================================================================
-FROM debian:stretch-slim
+FROM debian:stable-slim
 
 ARG BUILDNODE=unspecified
 ARG SOURCE_COMMIT=unspecified
