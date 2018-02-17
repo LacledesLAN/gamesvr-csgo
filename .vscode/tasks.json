@@ -1,0 +1,47 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "docker pull lacledeslan/steamcmd:linux; docker pull debian:stable-slim; docker build ./linux -t lltest/gamesvr-csgo --no-cache --build-arg BUILDNODE=$env:computername;",
+            "dependsOn": "download-sub-modules",
+            "group": "build",
+            "identifier": "build-image",
+            "problemMatcher": [],
+            "promptOnClose": true
+        },
+        {
+            "label": "Build & Execute Self Tests",
+            "type": "shell",
+            "command": "docker run -it --rm lltest/gamesvr-csgo ./ll-tests/gamesvr-csgo.sh;",
+            "dependsOn": "build-image",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "promptOnClose": true
+        },
+        {
+            "label": "Build & Run Interactive Server",
+            "type": "shell",
+            "command": "docker run -it --net=host lltest/gamesvr-csgo ./srcds_run -game csgo +game_type 1 +game_mode 0 -tickrate 128 +mapgroup ll_arms +map ar_baggage +sv_lan 1 +rcon_password \"test123\";",
+            "dependsOn": "build-image",
+            "group": "build",
+            "problemMatcher": [],
+            "promptOnClose": true
+        },
+        {
+            "label": "Build & Shell In",
+            "type": "shell",
+            "command": "docker run -it --net=host --rm lltest/gamesvr-csgo;",
+            "dependsOn": "build-image",
+            "group": "build",
+            "problemMatcher": [],
+            "promptOnClose": true
+        }
+    ]
+}
