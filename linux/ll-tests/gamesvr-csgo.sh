@@ -2,7 +2,7 @@
 
 #####################################################################################################
 ### CONFIG VARS #####################################################################################
-declare LLTEST_CMD="/app/srcds_run -game csgo +game_type 0 +game_mode 1 +map de_cache -insecure -tickrate 128 -norestart +sv_lan 1";
+declare LLTEST_CMD="/app/srcds_run -game cstrike +map de_dust2 -insecure -norestart +sv_lan 1";
 declare LLTEST_NAME="gamesvr-csgo-$(date '+%H%M%S')";
 #####################################################################################################
 #####################################################################################################
@@ -145,11 +145,27 @@ fi;
 
 #####################################################################################################
 ### TESTS ###########################################################################################
+# Check vanilla server
 should_lack 'Server restart in 10 seconds' 'Server is not boot-looping';
 should_lack 'Running the dedicated server as root' 'Server is not running under root';
-should_have 'Game.dll loaded for "Counter-Strike: Global Offensive"' 'srcds_run loaded CSGO';
+should_have 'server_srv.so loaded for "Counter-Strike: Source"' 'srcds_run loaded CS:Source';
+should_lack "'server.cfg' not present; not executing." 'CS:Source found and ran server.cfg';
 should_have 'Server is hibernating' 'srcds_run succesfully hibernated';
-should_echo "sv_cheats" '"sv_cheats" = "0" notify replicated';
+
+# Check SourceMod/MetaMod plugins
+should_have '[SM/MM Information]' 'Meta Mod and Source Mod are both running';
+should_have '===BEGIN SERVER STATUS===' 'LL status mod ran';
+should_lack '<Error> "' 'LL status mod is not showing any SM plugins with errors'
+should_have '"Server Status-LL MOD" (' 'LL status mod reports itself';
+should_have '"Admin File Reader" (' 'LL status mod reports admin file reader';
+should_have '"Log Connections - LL Mod" (' 'LL status mod reports LL version of "log connections"';
+should_have '"Basic Comm Control" (' 'LL status mod reports basic comm control';
+should_have '"Basic Info Triggers" (' 'LL status mod reports basic info triggers';
+should_have '"Anti-Flood" (' "LL status mod reports anti-flood";
+should_have '"Basic Votes" (' "LL status mod reports basic votes";
+
+# Verify sending commands works
+should_echo "sv_cheats" '"sv_cheats" = "0"';
 #####################################################################################################
 #####################################################################################################
 
