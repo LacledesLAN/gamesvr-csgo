@@ -1,11 +1,13 @@
 # escape=`
 FROM lacledeslan/steamcmd:linux as csgo-builder
 
+ARG ftpServer=content.lacledeslan.net
+
 RUN echo "Downloading content from LL public ftp server" &&`
         mkdir --parents /tmp/maps/ /output &&`
         cd /tmp/maps/ &&`
         wget -m `
-            ftp://llgameserverbot:6gDyfNJhm4UsraE5@raw.content.lacledeslan.net/csgo/maps/ `
+            ftp://llgameserverbot:6gDyfNJhm4UsraE5@$ftpServer/csgo/maps/ `
             -nH --no-verbose --cut-dirs 4 &&`
         rm -f .listing &&`
     echo "Decompressing files" &&`
