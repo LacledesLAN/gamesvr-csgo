@@ -1,12 +1,12 @@
 # escape=`
 FROM lacledeslan/steamcmd:linux as csgo-builder
 
-ARG ftpServer=content.lacledeslan.net
+ARG contentServer=content.lacledeslan.net
 
 RUN echo "Downloading content from specified content server" &&`
         mkdir --parents /tmp/maps/ /output &&`
         cd /tmp/maps/ &&`
-        wget -rkpN -l 1 -nH  --no-verbose --cut-dirs=3 -R "*.htm*" -e robots=off http://content.lacledeslan.com/fastDownloads/csgo/maps/ &&`
+        wget -rkpN -l 1 -nH  --no-verbose --cut-dirs=3 -R "*.htm*" -e robots=off "http://"$contentServer"/fastDownloads/fastDownloads/csgo/maps/" &&`
     echo "Decompressing files" &&`
         bzip2 --decompress /tmp/maps/*.bz2 &&`
     echo "Moving uncompressed files to destination" &&`
