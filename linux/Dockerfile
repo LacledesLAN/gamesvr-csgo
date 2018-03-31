@@ -3,22 +3,15 @@ FROM lacledeslan/steamcmd:linux as csgo-builder
 
 ARG ftpServer=content.lacledeslan.net
 
-RUN echo "Downloading content from LL public ftp server" &&`
+RUN echo "Downloading content from specified content server" &&`
         mkdir --parents /tmp/maps/ /output &&`
         cd /tmp/maps/ &&`
-        wget -m `
-            ftp://llgameserverbot:6gDyfNJhm4UsraE5@$ftpServer/csgo/maps/ `
-            -nH --no-verbose --cut-dirs 4 &&`
-        rm -f .listing &&`
+        wget -rkpN -l 1 -nH  --no-verbose --cut-dirs=3 -R "*.htm*" -e robots=off http://content.lacledeslan.com/fastDownloads/csgo/maps/ &&`
     echo "Decompressing files" &&`
-        bzip2 --decompress /tmp/maps/*.*.bz2 &&`
-        rm -f /tmp/maps/*.bz2 &&`
+        bzip2 --decompress /tmp/maps/*.bz2 &&`
     echo "Moving uncompressed files to destination" &&`
         mkdir --parents /output/csgo/maps/ &&`
-        mv /tmp/maps/*.bsp /output/csgo/maps/ &&`
-        mv /tmp/maps/*.nav /output/csgo/maps/ &&`
-    echo "Performing Cleanup" &&`
-        rm -rf /tmp/*/*;
+        mv *.bsp *.nav /output/csgo/maps/
 
 #=======================================================================
 FROM debian:stable-slim
