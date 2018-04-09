@@ -3,20 +3,25 @@ FROM lacledeslan/steamcmd:linux as csgo-builder
 
 ARG contentServer=content.lacledeslan.net
 
-RUN echo "Downloading content from specified content server" &&`
-        mkdir --parents /tmp/maps/ /output &&`
-        cd /tmp/maps/ &&`
-        wget -rkpN -l 1 -nH  --no-verbose --cut-dirs=3 -R "*.htm*" -e robots=off "http://"$contentServer"/fastDownloads/fastDownloads/csgo/maps/" &&`
-    echo "Decompressing files" &&`
-        bzip2 --decompress /tmp/maps/*.bz2 &&`
-    echo "Moving uncompressed files to destination" &&`
-        mkdir --parents /output/csgo/maps/ &&`
-        mv *.bsp *.nav /output/csgo/maps/
+RUN if [ "$contentServer" = false ] ; then `
+        echo "\n\nSkipping custom LL content\n\n"; `
+    else `
+        echo "\nDownloading custom LL content from $contentServer" &&`
+                mkdir --parents /tmp/maps/ /output &&`
+                cd /tmp/maps/ &&`
+                wget -rkpN -l 1 -nH  --no-verbose --cut-dirs=3 -R "*.htm*" -e robots=off "http://"$contentServer"/fastDownloads/csgo/maps/" &&`
+            echo "Decompressing files" &&`
+                bzip2 --decompress /tmp/maps/*.bz2 &&`
+            echo "Moving uncompressed files to destination" &&`
+                mkdir --parents /output/csgo/maps/ &&`
+                mv *.bsp *.nav /output/csgo/maps/; `
+    fi;
 
 #=======================================================================
 FROM debian:stable-slim
 
 ARG BUILDNODE=unspecified
+ARG SKIP_STEAMCMD=false
 ARG SOURCE_COMMIT=unspecified
 
 HEALTHCHECK NONE
@@ -46,7 +51,7 @@ RUN useradd --home /app --gid root --system CSGO &&`
 ## CSGO is so large we can't reliably use multi-stage builds in docker cloud
 
 # Copy cached build files (if any)
-COPY ./build-cache /app
+COPY ./steamcmd-cache /app
 
 #Pull in SteamCMD
 COPY --from=csgo-builder /app /app/steamcmd
@@ -65,13 +70,17 @@ RUN chmod +rx /app/ll-tests/*.sh &&`
 
 USER CSGO
 
-# Install CSGO
-RUN echo $'\n\nDownloading Counter-Strike: Global Offensive via SteamCMD' &&`
+# Download CSGO via SteamCMD
+RUN if [ "$SKIP_STEAMCMD" = true ] ; then `
+        echo "\n\nSkipping SteamCMD install -- using only contents from steamcmd-cache\n\n"; `
+    else `
+        echo "\n\nDownloading Counter-Strike: Global Offensive via SteamCMD"; `
         /app/steamcmd/steamcmd.sh `
             +login anonymous `
             +force_install_dir /app `
             +app_update 740 validate `
-            +quit;
+            +quit; `
+    fi;
 
 RUN echo $'\n\nLinking steamclient.so to prevent srcds_run errors' &&`
         mkdir --parents /app/.steam/sdk32 &&`

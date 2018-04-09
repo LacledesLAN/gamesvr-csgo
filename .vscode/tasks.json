@@ -42,6 +42,12 @@
             "group": "build",
             "problemMatcher": [],
             "promptOnClose": true
+        },
+        {
+            "label": "Build local SteamCMD cache",
+            "type": "shell",
+            "command": "docker run --rm -v ${cwd}/linux/steamcmd-cache:/output lacledeslan/steamcmd:linux ./steamcmd.sh +login anonymous +force_install_dir /output +app_update 740 validate +quit",
+            "problemMatcher": []
         }
     ]
 }

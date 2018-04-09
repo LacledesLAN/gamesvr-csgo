@@ -145,11 +145,16 @@ fi;
 
 #####################################################################################################
 ### TESTS ###########################################################################################
+# Stock CSGO server tests
+should_have 'Setting breakpad minidump AppID = 740' 'Sever started executing';
 should_lack 'Server restart in 10 seconds' 'Server is not boot-looping';
 should_lack 'Running the dedicated server as root' 'Server is not running under root';
 should_have 'Game.dll loaded for "Counter-Strike: Global Offensive"' 'srcds_run loaded CSGO';
 should_have 'Server is hibernating' 'srcds_run succesfully hibernated';
-should_echo "sv_cheats" '"sv_cheats" = "0" notify replicated';
+should_lack 'map load failed:' 'Server was able to load custom-content the map'
+
+# Verify server responds to commands
+should_echo "say STARTING COMMAND TESTS" 'Console: STARTING COMMAND TESTS';
 #####################################################################################################
 #####################################################################################################
 

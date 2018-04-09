@@ -1,5 +1,5 @@
-linux/build-cache/**
-!linux/build-cache/[Rr]eadme.md
+linux/steamcmd-cache/**
+!linux/steamcmd-cache/[Rr]eadme.md
 
 #### macOS Junk
 ._*
