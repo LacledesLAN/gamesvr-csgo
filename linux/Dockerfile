@@ -48,25 +48,13 @@ RUN useradd --home /app --gid root --system CSGO &&`
     mkdir -p /app/ll-tests &&`
     chown CSGO:root -R /app;
 
-## CSGO is so large we can't reliably use multi-stage builds in docker cloud
+## CSGO is so large we can't reliably use multi-stage builds in docker cloud :(
+COPY --chown=CSGO:root ./steamcmd-cache /app
+COPY --chown=CSGO:root --from=csgo-builder /app /app/steamcmd
+COPY --chown=CSGO:root --from=csgo-builder /output /app
+COPY --chown=CSGO:root ./ll-tests /app/ll-tests
 
-# Copy cached build files (if any)
-COPY ./steamcmd-cache /app
-
-#Pull in SteamCMD
-COPY --from=csgo-builder /app /app/steamcmd
-
-# Copy files in from builder
-COPY --from=csgo-builder /output /app
-# Ownership shim until [github.com/moby/moby/pull/34263] makes it into Docker Cloud
-RUN chown -R CSGO:root /app;
-
-## Add in tests
-COPY ./ll-tests /app/ll-tests
-
-RUN chmod +rx /app/ll-tests/*.sh &&`
-    chmod +rwx /app/ll-tests &&`
-    chown CSGO:root -R /app/ll-tests;
+RUN chmod +x /app/ll-tests/*.sh;
 
 USER CSGO
 
@@ -87,5 +75,7 @@ RUN echo $'\n\nLinking steamclient.so to prevent srcds_run errors' &&`
         ln -s /app/bin/steamclient.so /app/.steam/sdk32/steamclient.so;
 
 WORKDIR /app
+
+CMD ["/bin/bash"]
 
 ONBUILD USER root
