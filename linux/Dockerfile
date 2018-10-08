@@ -14,7 +14,7 @@ RUN if [ "$contentServer" = false ] ; then `
                 bzip2 --decompress /tmp/maps/*.bz2 &&`
             echo "Moving uncompressed files to destination" &&`
                 mkdir --parents /output/csgo/maps/ &&`
-                mv *.bsp *.nav /output/csgo/maps/; `
+                mv *.bsp /output/csgo/maps/; `
     fi;
 
 #=======================================================================
