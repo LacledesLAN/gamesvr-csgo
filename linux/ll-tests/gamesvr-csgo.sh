@@ -2,7 +2,7 @@
 
 #####################################################################################################
 ### CONFIG VARS #####################################################################################
-declare LLTEST_CMD="/app/srcds_run -game csgo +game_type 0 +game_mode 1 +map de_orange -insecure -tickrate 128 -norestart +sv_lan 1";
+declare LLTEST_CMD="/app/srcds_run -game csgo +game_type 0 +game_mode 1 +map poolday -insecure -tickrate 128 -norestart +sv_lan 1";
 declare LLTEST_NAME="gamesvr-csgo-$(date '+%H%M%S')";
 #####################################################################################################
 #####################################################################################################
