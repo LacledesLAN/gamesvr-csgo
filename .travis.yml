@@ -1,0 +1,34 @@
+sudo: required
+dist: trusty
+os: linux
+language: minimal
+addons:
+  apt:
+    packages:
+    - docker-ce
+git:
+  depth: 4
+services:
+  - docker
+
+before_install:
+  - docker pull debian:stable-slim
+  - docker pull lacledeslan/steamcmd:linux
+
+script:
+  - docker version
+  - docker build --no-cache --tag lltest/gamesvr-csgo --tag lacledeslan/gamesvr-csgo --build-arg BUILDNODE=TravisCI --build-arg SOURCE_COMMIT="$TRAVIS_COMMIT" ./linux
+  - docker run -it --rm lltest/gamesvr-csgo ./ll-tests/gamesvr-csgo.sh
+
+notifications:
+  slack:
+    secure: naVN0SppRpa8ub5hJ3lV+OQNxUJ82Ygrkc4e254i1HyA5vDMVP9Qv2fC6Bx00mNn+VTADcYklWbPYBVBGjSe9tRASK4IUKMNL7fsoKaW/J4SFKZsH/7piBHNOFHEq6Zk0WNVRNLPg1gP12h0j3RlxA3olN+Kxir/cvtV9sPgkSB0Wkk0wQSyw7hieTxPinEYhbo7E0PuV6vjpb5528ECSwDK5GRldbpcYKluHav9uTc8W/59EZyeDXgPm3EgmDFQ7W7a2KwlUU4N6wA/7I9OTxp8BlBrogUcM5xO5IMuPtuEq+Xb7gZSN9draArpxdgMiUJxbQ0+85DUViLsh6LQRjtdyYNZBlKe5e5kyiw7JBiI3/JsHIzf0h0EL+alr+Q9Kw37mdumUJxQoQ/hV9fKDk3SLWMI2mEYc0toY2Kr4osdHUpz0rMdwWvmxK+gaYsX0dDAnYXJF+D/U4cKXvSl05Am7qDCEm1c+oqqXKvCJYELrl7aJ+99F5obt4PLcDbsYgvS4NM3414h2YJxJ5iQW+VCPEpqb4/O+4cGFT3xrdETDr1lseVH+A8Hr4q0XlRj8Ib2aXWhs1P86Pj/ZZQqHG6FEkhZuTu8Pg0nPep1y7Xec1cOKOJnzfXn3rmN0ctjSMHMTYK6HsuAFc9U7wbh8dR5Jo+BOr9EqlkXaTDJRcw=
+
+before_deploy:
+  - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin;
+deploy:
+  provider: script
+  script: docker push lacledeslan/gamesvr-csgo
+  on:
+    branch: master
+
