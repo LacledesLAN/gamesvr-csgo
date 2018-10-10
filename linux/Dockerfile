@@ -1,5 +1,5 @@
 # escape=`
-FROM lacledeslan/steamcmd:linux as csgo-builder
+FROM lacledeslan/steamcmd:linux as csgobuilder
 
 ARG contentServer=content.lacledeslan.net
 
@@ -51,8 +51,8 @@ RUN useradd --home /app --gid root --system CSGO &&`
 
 ## CSGO is so large we can't reliably use multi-stage builds in docker cloud :(
 COPY --chown=CSGO:root ./steamcmd-cache /app
-COPY --chown=CSGO:root --from=csgo-builder /app /app/steamcmd
-COPY --chown=CSGO:root --from=csgo-builder /output /app
+COPY --chown=CSGO:root --from=csgobuilder /app /app/steamcmd
+COPY --chown=CSGO:root --from=csgobuilder /output /app
 COPY --chown=CSGO:root ./ll-tests /app/ll-tests
 
 RUN chmod +x /app/ll-tests/*.sh;
