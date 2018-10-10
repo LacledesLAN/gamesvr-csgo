@@ -45,6 +45,7 @@ LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
 
 # Set up Enviornment
 RUN useradd --home /app --gid root --system CSGO &&`
+    mkdir -p /app/steamcmd &&`
     mkdir -p /app/ll-tests &&`
     chown CSGO:root -R /app;
 
