@@ -10,6 +10,8 @@ variables:
   imageName: 'lacledeslan/gamesvr-csgo'
 
 steps:
+- script: docker version
+  displayName: 'Docker version'
 - script: docker pull lacledeslan/steamcmd:linux
   displayName: 'Fetch image lacledeslan/steamcmd:linux'
 - script: docker pull debian:stable-slim
