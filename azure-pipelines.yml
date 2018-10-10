@@ -14,7 +14,7 @@ steps:
   displayName: 'Fetch image lacledeslan/steamcmd:linux'
 - script: docker pull debian:stable-slim
   displayName: 'Fetch image debian:stable-slim'
-- script: docker build -f ./linux/Dockerfile -t $(imageName) .
+- script: docker build ./linux -t $(imageName) --no-cache --build-arg BUILDNODE=Azure;
   displayName: 'docker build'
 - script: docker run -it --rm $(imageName) ./ll-tests/gamesvr-csgo.sh;
   displayName: Run self tests
