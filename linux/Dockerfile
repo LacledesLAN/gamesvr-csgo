@@ -1,5 +1,5 @@
 # escape=`
-FROM lacledeslan/steamcmd:linux as csgobuilder
+FROM lacledeslan/steamcmd:linux
 
 ARG contentServer=content.lacledeslan.net
 
@@ -45,14 +45,13 @@ LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
 
 # Set up Enviornment
 RUN useradd --home /app --gid root --system CSGO &&`
-    mkdir -p /app/steamcmd &&`
     mkdir -p /app/ll-tests &&`
     chown CSGO:root -R /app;
 
 ## CSGO is so large we can't reliably use multi-stage builds in docker cloud :(
 COPY --chown=CSGO:root ./steamcmd-cache /app
-COPY --chown=CSGO:root --from=csgobuilder /app /app/steamcmd
-COPY --chown=CSGO:root --from=csgobuilder /output /app
+COPY --chown=CSGO:root --from=0 /app /app/steamcmd
+COPY --chown=CSGO:root --from=0 /output /app
 COPY --chown=CSGO:root ./ll-tests /app/ll-tests
 
 RUN chmod +x /app/ll-tests/*.sh;
