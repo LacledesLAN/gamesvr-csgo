@@ -18,5 +18,5 @@ steps:
   displayName: 'Fetch image debian:stable-slim'
 - script: docker build ./linux -t $(imageName) --no-cache --build-arg BUILDNODE=Azure;
   displayName: 'docker build'
-- script: docker run -it --rm $(imageName) ./ll-tests/gamesvr-csgo.sh;
+- script: docker run --rm $(imageName) ./ll-tests/gamesvr-csgo.sh;
   displayName: Run self tests
