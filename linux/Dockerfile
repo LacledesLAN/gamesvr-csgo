@@ -49,10 +49,15 @@ RUN useradd --home /app --gid root --system CSGO &&`
     chown CSGO:root -R /app;
 
 ## CSGO is so large we can't reliably use multi-stage builds in docker cloud :(
+# RUN true is work around for https://github.com/moby/moby/issues/36573
 COPY --chown=CSGO:root ./steamcmd-cache /app
+RUN true
 COPY --chown=CSGO:root --from=csgo-builder /app /app/steamcmd
+RUN true
 COPY --chown=CSGO:root --from=csgo-builder /output /app
+RUN true
 COPY --chown=CSGO:root ./ll-tests /app/ll-tests
+RUN true
 
 RUN chmod +x /app/ll-tests/*.sh;
 
