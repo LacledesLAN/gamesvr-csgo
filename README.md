@@ -8,6 +8,7 @@ This repository is maintained by [Laclede's LAN](https://lacledeslan.com). Its c
 
 ## Linux
 
+[![Build Status](https://dev.azure.com/LacledesLAN/Game%20Servers/_apis/build/status/gamesvr-csgo-tourney)](https://dev.azure.com/LacledesLAN/Game%20Servers/_build/latest?definitionId=5)
 [![](https://images.microbadger.com/badges/version/lacledeslan/gamesvr-csgo.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/lacledeslan/gamesvr-csgo.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo "Get your own image badge on microbadger.com")
 
