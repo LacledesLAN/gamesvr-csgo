@@ -7,7 +7,7 @@ variables:
   contentServer: content.lacledeslan.net
 
 jobs:
-- job: Check Dependencies
+- job: Check_Dependencies
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
@@ -15,7 +15,7 @@ jobs:
     displayName: 'verify content server is reachable'
 - job: Build
   timeoutInMinutes: 90
-  dependsOn: Check Dependencies
+  dependsOn: Check_Dependencies
   steps:
   - script: docker build . -f linux.Dockerfile -t lacledeslan/gamesvr-csgo --no-cache --build-arg BUILDNODE=Azure --build-arg contentServer=$(contentServer);
     displayName: 'Docker Build'
@@ -28,8 +28,6 @@ jobs:
     condition: ne(variables['Build.Reason'], 'PullRequest')
     displayName: 'Push to Docker HUB'
   - script: curl -X POST  "https://hooks.microbadger.com/images/lacledeslan/gamesvr-csgo/$(microBadgerToken)"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
     displayName: 'Update MicroBadger'
   - script: docker logout
-    condition: ne(variables['Build.Reason'], 'PullRequest')
-    displayName: 'Clean up'
+    displayName: 'Log out of Docker HUB'
