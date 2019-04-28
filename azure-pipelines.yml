@@ -3,17 +3,18 @@
 # Add steps that use Docker Compose, tag images, push to a registry, run an image, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-pool:
-  vmImage: 'Ubuntu 16.04'
-
 jobs:
 - job: prerequisites
+  pool:
+    vmImage: 'Ubuntu 16.04'
   steps:
   - script: docker pull lacledeslan/steamcmd:linux
     displayName: 'pull lacledeslan/steamcmd:linux'
   - script: docker pull debian:stable-slim
     displayName: 'pull debian:stable-slim'
 - job: build
+  pool:
+    vmImage: 'Ubuntu 16.04'
   dependsOn: prerequisites
   steps:
   - script: docker build ./linux -t lacledeslan/gamesvr-csgo --no-cache --build-arg BUILDNODE=Azure;
@@ -21,6 +22,8 @@ jobs:
   - script: docker run --rm lacledeslan/gamesvr-csgo ./ll-tests/gamesvr-csgo.sh;
     displayName: 'Run Self Tests'
 - job: distribute
+  pool:
+    vmImage: 'Ubuntu 16.04'
   dependsOn: build
   condition: ne(variables['Build.Reason'], 'PullRequest')
   steps:
