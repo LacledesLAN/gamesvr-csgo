@@ -3,28 +3,37 @@
 # Add steps that use Docker Compose, tag images, push to a registry, run an image, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
+variables:
+  contentServer: content.lacledeslan.net
+
 jobs:
-- job: prerequisites
+  pool:
+    vmImage: 'Ubuntu 16.04'
+- job: Dependencies
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
+  - script: curl --fail --head "http://"$(contentServer)"/fastDownloads/csgo/maps/de_lltest.bsp.bz2"
+    displayName: 'verify content server is reachable'
   - script: docker pull lacledeslan/steamcmd:linux
     displayName: 'pull lacledeslan/steamcmd:linux'
   - script: docker pull debian:stable-slim
     displayName: 'pull debian:stable-slim'
-- job: build
+- job: Build
+  timeoutInMinutes: 90
   pool:
     vmImage: 'Ubuntu 16.04'
-  dependsOn: prerequisites
+  dependsOn: Dependencies
   steps:
-  - script: docker build ./linux -t lacledeslan/gamesvr-csgo --no-cache --build-arg BUILDNODE=Azure;
+  - script: docker build . -f linux.Dockerfile -t lacledeslan/gamesvr-csgo --no-cache --build-arg BUILDNODE=Azure --build-arg contentServer=$(contentServer);
     displayName: 'Docker Build'
   - script: docker run --rm lacledeslan/gamesvr-csgo ./ll-tests/gamesvr-csgo.sh;
     displayName: 'Run Self Tests'
-- job: distribute
+- job: Distribute
+  timeoutInMinutes: 90
   pool:
     vmImage: 'Ubuntu 16.04'
-  dependsOn: build
+  dependsOn: Build
   condition: ne(variables['Build.Reason'], 'PullRequest')
   steps:
   - script: |
