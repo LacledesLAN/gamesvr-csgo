@@ -19,8 +19,6 @@ jobs:
     displayName: 'pull debian:stable-slim'
 - job: Build
   timeoutInMinutes: 90
-  pool:
-    vmImage: 'Ubuntu 16.04'
   dependsOn: Dependencies
   steps:
   - script: docker build . -f linux.Dockerfile -t lacledeslan/gamesvr-csgo --no-cache --build-arg BUILDNODE=Azure --build-arg contentServer=$(contentServer);
@@ -29,8 +27,6 @@ jobs:
     displayName: 'Run Self Tests'
 - job: Distribute
   timeoutInMinutes: 90
-  pool:
-    vmImage: 'Ubuntu 16.04'
   dependsOn: Build
   condition: ne(variables['Build.Reason'], 'PullRequest')
   steps:
