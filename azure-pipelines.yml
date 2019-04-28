@@ -7,8 +7,6 @@ variables:
   contentServer: content.lacledeslan.net
 
 jobs:
-  pool:
-    vmImage: 'Ubuntu 16.04'
 - job: Dependencies
   pool:
     vmImage: 'Ubuntu 16.04'
@@ -37,6 +35,7 @@ jobs:
   condition: ne(variables['Build.Reason'], 'PullRequest')
   steps:
   - script: |
+      docker images
       docker login -u $(dockerUser) -p $(dockerPass)
       docker push lacledeslan/gamesvr-csgo
     displayName: 'Push to Docker HUB'
