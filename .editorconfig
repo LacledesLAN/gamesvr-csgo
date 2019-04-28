@@ -10,3 +10,6 @@ trim_trailing_whitespace = true
 
 [windows/**]
 end_of_line = crlf
+
+[*.y*ml]
+indent_size = 2
