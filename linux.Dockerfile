@@ -2,6 +2,19 @@
 FROM lacledeslan/steamcmd:linux as csgo-builder
 
 ARG contentServer=content.lacledeslan.net
+ARG SKIP_STEAMCMD=false
+
+# Copy in local cache files (if any)
+COPY ./.steamcmd-cache/linux /output
+
+# Download CSGO via SteamCMD
+RUN if [ "$SKIP_STEAMCMD" = true ] ; then `
+        echo "\n\nSkipping SteamCMD install -- using only contents from steamcmd-cache\n\n"; `
+    else `
+        echo "\n\nDownloading Counter-Strike: Global Offensive via SteamCMD"; `
+        mkdir --parents /output; `
+        /app/steamcmd.sh +login anonymous +force_install_dir /output +app_update 740 validate +quit; `
+    fi;
 
 RUN if [ "$contentServer" = false ] ; then `
         echo "\n\nSkipping custom LL content\n\n"; `
@@ -14,14 +27,13 @@ RUN if [ "$contentServer" = false ] ; then `
                 bzip2 --decompress /tmp/maps/*.bz2 &&`
             echo "Moving uncompressed files to destination" &&`
                 mkdir --parents /output/csgo/maps/ &&`
-                mv *.bsp *.nav /output/csgo/maps/; `
+                mv --no-clobber *.bsp *.nav /output/csgo/maps/; `
     fi;
 
-#=======================================================================
+#=======================================================================`
 FROM debian:stable-slim
 
 ARG BUILDNODE=unspecified
-ARG SKIP_STEAMCMD=false
 ARG SOURCE_COMMIT=unspecified
 
 HEALTHCHECK NONE
@@ -48,31 +60,14 @@ RUN useradd --home /app --gid root --system CSGO &&`
     mkdir -p /app/ll-tests &&`
     chown CSGO:root -R /app;
 
-## CSGO is so large we can't reliably use multi-stage builds in docker cloud :(
 # `RUN true` lines are work around for https://github.com/moby/moby/issues/36573
-COPY --chown=CSGO:root ./.steamcmd-cache/linux /app
-RUN true
-COPY --chown=CSGO:root --from=csgo-builder /app /app/steamcmd
-RUN true
 COPY --chown=CSGO:root --from=csgo-builder /output /app
 RUN true
-COPY --chown=CSGO:root ./dist/linux/ll-tests /app/ll-tests
 
+COPY --chown=CSGO:root ./dist/linux/ll-tests /app/ll-tests
 RUN chmod +x /app/ll-tests/*.sh;
 
 USER CSGO
-
-# Download CSGO via SteamCMD
-RUN if [ "$SKIP_STEAMCMD" = true ] ; then `
-        echo "\n\nSkipping SteamCMD install -- using only contents from steamcmd-cache\n\n"; `
-    else `
-        echo "\n\nDownloading Counter-Strike: Global Offensive via SteamCMD"; `
-        /app/steamcmd/steamcmd.sh `
-            +login anonymous `
-            +force_install_dir /app `
-            +app_update 740 validate `
-            +quit; `
-    fi;
 
 RUN echo $'\n\nLinking steamclient.so to prevent srcds_run errors' &&`
         mkdir --parents /app/.steam/sdk32 &&`
