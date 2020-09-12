@@ -15,7 +15,7 @@ jobs:
       - name: Fetch Dependencies
         run: docker pull lacledeslan/steamcmd:linux && docker pull debian:buster-slim
       - name: test
-        run: pwd
+        run: ls -la
       - name: Build Image
-        run: docker build . -f linux.Dockerfile -t lacledeslan/gamesvr-csgo:latest --no-cache --build-arg BUILDNODE=GitHub
+        run: docker build . -f linux.Dockerfile -t lltest/gamesvr-csgo --no-cache --build-arg BUILDNODE=GitHub;
         
