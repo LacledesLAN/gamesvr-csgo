@@ -13,9 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Dependencies
-        uses: actions/checkout@v2
         run: docker pull lacledeslan/steamcmd:linux && docker pull debian:buster-slim
       - name: Build Image
-        uses: actions/checkout@v2
         run: docker build . --file linux.Dockerfile --tag lacledeslan/gamesvr-csgo:latest --no-cache --build-arg BUILDNODE=GitHub
         
