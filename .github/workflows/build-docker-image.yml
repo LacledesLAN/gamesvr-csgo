@@ -12,11 +12,9 @@ jobs:
     name: Build Docker image
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name Check out the repo
+        uses: actions/checkout@v2
       - name: Fetch Dependencies
         run: docker pull lacledeslan/steamcmd:linux && docker pull debian:buster-slim
-      - name: test
-        run: ls -la
       - name: Build Image
-        run: docker build . -f linux.Dockerfile -t lltest/gamesvr-csgo --no-cache --build-arg BUILDNODE=GitHub;
-        
+        run: docker build . -f linux.Dockerfile -t lacledeslan/gamesvr-csgo --no-cache --build-arg BUILDNODE=GitHub;
