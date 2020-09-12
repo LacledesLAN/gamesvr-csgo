@@ -14,7 +14,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      name: get base image
+      name: Build the Docker image
       run: docker pull lacledeslan/steamcmd:linux && docker pull debian:buster-slim
-    - name: Build the Docker image
       run: docker build . --file linux.Dockerfile --tag lacledeslan/gamesvr-csgo:latest --no-cache --build-arg BUILDNODE=GitHub
