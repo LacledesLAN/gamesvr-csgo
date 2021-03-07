@@ -5,7 +5,7 @@ ARG contentServer=content.lacledeslan.net
 ARG SKIP_STEAMCMD=false
 
 # Copy in local cache files (if any)
-COPY ./.steamcmd/linux/output /output
+COPY --chown=SteamCMD:root ./.steamcmd/linux/output /output
 
 # Download CSGO via SteamCMD
 RUN if [ "$SKIP_STEAMCMD" = true ] ; then `
