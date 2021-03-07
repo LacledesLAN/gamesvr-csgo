@@ -1,9 +1,12 @@
 ### Project Specific ###
-.steamcmd-cache/**
-!.steamcmd-cache/[Rr]eadme.md
-!.steamcmd-cache/linux
-.steamcmd-cache/linux/**
-!.steamcmd-cache/linux/.gitkeep
+.steamcmd/**
+!.steamcmd/[Rr]eadme.md
+!.steamcmd/linux
+.steamcmd/linux/**
+!.steamcmd/linux/.gitkeep
+!.steamcmd/linux/output
+.steamcmd/linux/output/**
+!.steamcmd/linux/output/.gitkeep
 
 ### VisualStudioCode ###
 .vscode/*

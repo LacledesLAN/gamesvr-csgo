@@ -1,2 +1,4 @@
-.steamcmd-cache/readme.md
-.steamcmd-cache/*/.gitkeep
+.steamcmd/readme.md
+.steamcmd/linux/app
+.steamcmd/linux/.gitkeep
+.steamcmd/linux/output/.gitkeep
