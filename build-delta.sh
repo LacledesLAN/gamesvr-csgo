@@ -22,8 +22,7 @@ docker container rm LLSteamCMD-Extractor
 
 
 echo -e '\n\033[1m[Building Delta Container]\033[0m'
-docker pull lacledeslan/gamesvr-csgo:latest
-docker tag lacledeslan/gamesvr-csgo:latest lacledeslan/gamesvr-csgo:backup
+docker pull lacledeslan/gamesvr-csgo:base
 docker container rm LL-CSGO-DELTA-CAPTURE &>/dev/null || true
 docker run -it --name LL-CSGO-DELTA-CAPTURE \
     --mount type=bind,source="$(pwd)"/.steamcmd/linux/app/,target=/steamcmd/ \
@@ -41,4 +40,4 @@ docker run -it --rm lacledeslan/gamesvr-csgo:delta ./ll-tests/gamesvr-csgo.sh
 
 echo -e '\n\033[1m[Results]\033[0m'
 echo -e 'Image "lacledeslan/gamesvr-csgo:delta" created, to push to Docker HUB run command:\n'
-echo -e '\t\tdocker tab lacledeslan/gamesvr-csgo:delta lacledeslan/gamesvr-csgo:latest && docker push lacledeslan/gamesvr-csgo:latest\n'
+echo -e '\t\tdocker tag lacledeslan/gamesvr-csgo:delta lacledeslan/gamesvr-csgo:latest && docker push lacledeslan/gamesvr-csgo:latest\n'

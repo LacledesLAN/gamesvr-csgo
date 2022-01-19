@@ -8,13 +8,9 @@ This repository is maintained by [Laclede's LAN](https://lacledeslan.com). Its c
 
 ## Linux
 
-[![Build Status](https://dev.azure.com/LacledesLAN/Game%20Servers/_apis/build/status/gamesvr-csgo-tourney)](https://dev.azure.com/LacledesLAN/Game%20Servers/_build/latest?definitionId=5)
-[![](https://images.microbadger.com/badges/version/lacledeslan/gamesvr-csgo.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/image/lacledeslan/gamesvr-csgo.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo "Get your own image badge on microbadger.com")
-
 ### Download
 
-```
+```shell
 docker pull lacledeslan/gamesvr-csgo;
 ```
 
@@ -22,13 +18,13 @@ docker pull lacledeslan/gamesvr-csgo;
 
 The image includes a test script that can be used to verify its contents. No changes or pull-requests will be accepted to this repository if any tests fail.
 
-```
+```shell
 docker run -it --rm lacledeslan/gamesvr-csgo ./ll-tests/gamesvr-csgo.sh;
 ```
 
 ### Run Interactive Server
 
-```
+```shell
 docker run -it --rm --net=host lacledeslan/gamesvr-csgo ./srcds_run -game csgo +game_type 0 +game_mode 1 -tickrate 128 +map de_cache +sv_lan 1;
 ```
 
