@@ -2,7 +2,7 @@
 set -e
 
 ##
-## This script will do a quick update to gamesvr-csgo, creating a "detla" layer, that can then be pushed to
+## This script will do a quick update to gamesvr-csgo, creating a "delta" layer, that can then be pushed to
 ## DockerHUB. Image is not as clean as building from scratch - but this process is significantly faster and
 ## good for tight deadlines.
 ##

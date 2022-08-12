@@ -13,7 +13,7 @@ RUN if [ "$SKIP_STEAMCMD" = true ] ; then `
     else `
         echo "\n\nDownloading Counter-Strike: Global Offensive via SteamCMD"; `
         mkdir --parents /output; `
-        /app/steamcmd.sh +login anonymous +force_install_dir /output +app_update 740 validate +quit;`
+        /app/steamcmd.sh +force_install_dir /output +login anonymous +app_update 740 validate +quit;`
     fi;
 
 RUN if [ "$contentServer" = false ] ; then `
