@@ -13,7 +13,7 @@ echo -e "Docker server version: '$(docker version --format '{{.Server.Version}}'
 
 echo -e '\n\033[1m[Build Image]\033[0m'
 docker build . -f linux.Dockerfile --rm -t lacledeslan/gamesvr-csgo:latest --no-cache --pull --build-arg BUILDNODE=$(cat /proc/sys/kernel/hostname);
-docker run -it --rm lltest/gamesvr-csgo:latest ./ll-tests/gamesvr-csgo.sh;
+docker run -it --rm lacledeslan/gamesvr-csgo:latest ./ll-tests/gamesvr-csgo.sh;
 
 
 echo -e '\n\033[1m[Running Self-Checks]\033[0m'
