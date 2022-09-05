@@ -31,13 +31,12 @@ docker run -it --name LL-CSGO-DELTA-CAPTURE \
 
 
 echo -e '\n\033[1m[Commiting Delta Container to Image]\033[0m'
-docker commit --change='CMD ["/bin/bash"]' --message="Content delta update $(date '+%d/%m/%Y %H:%M:%S')" "$(docker ps -aqf "name=LL-CSGO-DELTA-CAPTURE")" lacledeslan/gamesvr-csgo:delta
+docker commit --change='CMD ["/bin/bash"]' --message="Content delta update $(date '+%d/%m/%Y %H:%M:%S')" "$(docker ps -aqf "name=LL-CSGO-DELTA-CAPTURE")" lacledeslan/gamesvr-csgo:latest
 docker container rm LL-CSGO-DELTA-CAPTURE
 
 echo -e '\n\033[1m[Running Image Self-Checks]\033[0m'
-docker run -it --rm lacledeslan/gamesvr-csgo:delta ./ll-tests/gamesvr-csgo.sh
+docker run -it --rm lacledeslan/gamesvr-csgo:latest ./ll-tests/gamesvr-csgo.sh
 
 
-echo -e '\n\033[1m[Results]\033[0m'
-echo -e 'Image "lacledeslan/gamesvr-csgo:delta" created, to push to Docker HUB run command:\n'
-echo -e '\t\tdocker tag lacledeslan/gamesvr-csgo:delta lacledeslan/gamesvr-csgo:latest && docker push lacledeslan/gamesvr-csgo:latest\n'
+echo -e '\n\033[1m[Pushing to Docker Hub]\033[0m'
+docker push lacledeslan/gamesvr-csgo:latest
