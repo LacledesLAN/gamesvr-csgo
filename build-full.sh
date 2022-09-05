@@ -21,5 +21,7 @@ docker run -it --rm lacledeslan/gamesvr-csgo:latest ./ll-tests/gamesvr-csgo.sh
 
 echo -e '\n\033[1m[Pushing to Docker Hub]\033[0m'
 docker tag lacledeslan/gamesvr-csgo:latest lacledeslan/gamesvr-csgo:base
+echo "> push lacledeslan/gamesvr-csgo:base"
 docker push lacledeslan/gamesvr-csgo:base
+echo "> push lacledeslan/gamesvr-csgo:latest"
 docker push lacledeslan/gamesvr-csgo:latest
