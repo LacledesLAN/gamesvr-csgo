@@ -50,19 +50,19 @@ if [ "$option_delta_updates" != 'true' ]; then
     # Full Update
     #
 
-    echo -e '\n\033[1m[Build Full Image]\033[0m'
+    echo -e '\n\033[1m[Build Full Image]\033[0m';
     docker build . -f linux.Dockerfile --rm -t lacledeslan/gamesvr-csgo:latest --no-cache --pull --build-arg BUILDNODE="$(cat /proc/sys/kernel/hostname)";
 else
     #
     # Delta Update
     #
 
-    echo -e '\n\033[1m[Grabbing and Extracting SteamCMD]\033[0m'
+    echo -e '\n\033[1m[Grabbing and Extracting SteamCMD]\033[0m';
     # to bad `--volumes-from` doesn't support path aliasing ヽ(ಠ_ಠ)ノ
     docker container rm LLSteamCMD-Extractor &>/dev/null || true
-    docker create --name LLSteamCMD-Extractor lacledeslan/steamcmd:latest
-    docker cp LLSteamCMD-Extractor:/app "$(pwd)/.steamcmd/linux"
-    docker container rm LLSteamCMD-Extractor
+    docker create --name LLSteamCMD-Extractor lacledeslan/steamcmd:latest;
+    docker cp LLSteamCMD-Extractor:/app "$(pwd)/.steamcmd/linux";
+    docker container rm LLSteamCMD-Extractor;
 
 
     echo -e '\n\033[1m[Building Delta Container]\033[0m'
