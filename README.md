@@ -1,5 +1,7 @@
 # Counter-Strike: Global Offensive Dedicated Server in Docker
 
+**THIS PROJECT IS RETIRED AND NO LONGER SUPPORTED**
+
 Counter-Strike: Global Offensive (CS:GO) is a multiplayer first-person shooter and is the fourth game in the
 [Counter-Strike series](https://en.wikipedia.org/wiki/Counter-Strike). The game pits two teams against each other: the
 Terrorists and the Counter-Terrorists. Both sides are tasked with eliminating the other while also completing separate
@@ -8,36 +10,6 @@ Counter-Terrorists must either prevent the bomb from being planted, defuse the b
 eight game modes, all of which have distinct characteristics specific to that mode.
 
 ![Counter-Strike Global Offensive Screenshot](https://raw.githubusercontent.com/LacledesLAN/gamesvr-csgo/master/.misc/screenshot.jpg "Counter-Strike Global Offensive Screenshot")
-
-This repository is maintained by [Laclede's LAN](https://lacledeslan.com). Its contents are intended to be bare-bones
-and used as a stock server. For examples of building a customized server from this Docker image browse its related
-child-projects [gamesvr-csgo-freeplay](https://github.com/LacledesLAN/gamesvr-csgo-freeplay),
-[gamesvr-csgo-test](https://github.com/LacledesLAN/gamesvr-csgo-test), and
-[gamesvr-csgo-tourney](https://github.com/LacledesLAN/gamesvr-csgo-tourney). If any documentation is unclear or it has
-any issues please see [CONTRIBUTING.md](./CONTRIBUTING.md).
-
-## Linux
-
-### Download
-
-```shell
-docker pull lacledeslan/gamesvr-csgo;
-```
-
-### Run Self Tests
-
-The image includes a test script that can be used to verify its contents. No changes or pull-requests will be accepted
-to this repository if any tests fail.
-
-```shell
-docker run -it --rm lacledeslan/gamesvr-csgo ./ll-tests/gamesvr-csgo.sh;
-```
-
-### Run Interactive Server
-
-```shell
-docker run -it --rm --net=host lacledeslan/gamesvr-csgo ./srcds_run -game csgo +game_type 0 +game_mode 1 -tickrate 128 +map de_cache +sv_lan 1;
-```
 
 ## Getting Started with Game Servers in Docker
 
